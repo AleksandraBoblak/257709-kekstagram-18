@@ -1,7 +1,5 @@
 'use strict';
 
-var picturesElement = document.querySelector('.pictures');
-
 var COMMENTS = ['Всё отлично!',
   'В целом всё неплохо. Но не всё.',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
@@ -13,9 +11,14 @@ var COMMENTS = ['Всё отлично!',
 var NAMES = ['Артем', 'Ираклий', 'Марина', 'Снежана', 'Владлена', 'Апатий', 'Педро', 'Зидана'];
 var PHOTOS_COUNT = 25;
 
+var picturesElement = document.querySelector('.pictures');
 var pictureTemplate = document.querySelector('#picture')
 .content
 .querySelector('.picture');
+
+var getCommentsCount = function () {
+  return getRandomInRange(0, 5);
+};
 
 var getRandomElement = function (array) {
   return array[Math.floor(Math.random() * array.length)];
@@ -25,23 +28,35 @@ var getRandomInRange = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
-var generatePhotoDesc = function () {
+var generatePhotoDesc = function (index) {
   return {
-    url: 'photos/' + getRandomInRange(1, 25) + '.jpg',
+    url: 'photos/' + (index + 1) + '.jpg',
     description: 'Случайная фотография',
     likes: getRandomInRange(15, 200),
-    comment: {
-      avatar: 'img/avatar-' + getRandomInRange(1, 6) + '.svg',
-      message: getRandomElement(COMMENTS),
-      name: getRandomElement(NAMES)
-    }
+    comments: generateCommentsArray()
   };
+};
+
+var generateCommentsArray = function () {
+  var comments = [];
+  var commentsCount = getCommentsCount();
+  for (var i = 0; i < commentsCount; i++) {
+    comments.push(
+        {
+          avatar: 'img/avatar-' + getRandomInRange(1, 6) + '.svg',
+          message: getRandomElement(COMMENTS),
+          name: getRandomElement(NAMES)
+        }
+    );
+  }
+
+  return comments;
 };
 
 var generatePhotosArray = function () {
   var photos = [];
   for (var i = 0; i < PHOTOS_COUNT; i++) {
-    photos.push(generatePhotoDesc());
+    photos.push(generatePhotoDesc(i));
   }
 
   return photos;
@@ -50,7 +65,7 @@ var generatePhotosArray = function () {
 var renderPhoto = function (photo) {
   var photoElement = pictureTemplate.cloneNode(true);
 
-  photoElement.querySelector('.picture__comments').textContent = photo.comment.message;
+  photoElement.querySelector('.picture__comments').textContent = photo.comments.message;
   photoElement.querySelector('.picture__likes').textContent = photo.likes;
   photoElement.querySelector('.picture__img').src = photo.url;
   photoElement.querySelector('.picture__img').alt = photo.description;
