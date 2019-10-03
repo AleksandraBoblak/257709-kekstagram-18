@@ -12,6 +12,7 @@ var COMMENTS = ['Всё отлично!',
 
 var NAMES = ['Артем', 'Ираклий', 'Марина', 'Снежана', 'Владлена', 'Апатий', 'Педро', 'Зидана'];
 var PHOTOS_COUNT = 25;
+var HASHTAG_COUNT = 5;
 
 var picturesElement = document.querySelector('.pictures');
 var pictureTemplate = document.querySelector('#picture')
@@ -29,6 +30,8 @@ var effectsElements = uploadFormElement.querySelectorAll('.effects__radio');
 var imagePreview = uploadFormElement.querySelector('.img-upload__preview');
 var previewOriginalElement = uploadFormElement.querySelector('#effect-none');
 var sliderFormElement = uploadFormElement.querySelector('.effect-level');
+
+var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
 
 var filters = {
   chrome: {
@@ -128,6 +131,7 @@ var renderPhotosToDOM = function (photos) {
 
 var init = function () {
   renderPhotosToDOM(generatePhotosArray());
+  onEffectClick();
 };
 
 var onPopupEscPress = function (evt) {
@@ -169,42 +173,8 @@ var onEffectClick = function () {
   }
 };
 
-init();
-
-uploadInputElement.addEventListener('change', function () {
-  uploadFormElement.classList.remove(HIDDEN_CLASS);
-  document.addEventListener('keydown', onPopupEscPress);
-  setValue(100);
-});
-
-buttonCloseElement.addEventListener('click', function () {
-  closePopup();
-});
-
-effectLineElement.addEventListener('mouseup', function (event) {
-  var bounds = effectLineElement.getBoundingClientRect();
-  var value = (event.clientX - bounds.left) / bounds.width * 100;
-  setValue(value);
-});
-
-onEffectClick();
-
-previewOriginalElement.addEventListener('click', function () {
-  imagePreview.style.filter = 'none';
-  sliderFormElement.classList.add(HIDDEN_CLASS);
-});
-
-//  валидация хэш-тегов
-
-var HASHTAG_COUNT = 5;
-var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
-
 var isTooManyHashtags = function (array) {
-  if (array.length - 1 >= HASHTAG_COUNT) {
-    return true;
-  } else {
-    return false;
-  }
+  return array.length > HASHTAG_COUNT;
 };
 
 var hasRepeats = function (array) {
@@ -235,6 +205,29 @@ var validateHashtag = function (hashtags) {
   }
   return '';
 };
+
+init();
+
+uploadInputElement.addEventListener('change', function () {
+  uploadFormElement.classList.remove(HIDDEN_CLASS);
+  document.addEventListener('keydown', onPopupEscPress);
+  setValue(100);
+});
+
+buttonCloseElement.addEventListener('click', function () {
+  closePopup();
+});
+
+effectLineElement.addEventListener('mouseup', function (event) {
+  var bounds = effectLineElement.getBoundingClientRect();
+  var value = (event.clientX - bounds.left) / bounds.width * 100;
+  setValue(value);
+});
+
+previewOriginalElement.addEventListener('click', function () {
+  imagePreview.style.filter = 'none';
+  sliderFormElement.classList.add(HIDDEN_CLASS);
+});
 
 hashtagsInputElement.addEventListener('change', function () {
   var hashtags = hashtagsInputElement.value;
