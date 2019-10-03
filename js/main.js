@@ -34,6 +34,10 @@ var sliderFormElement = uploadFormElement.querySelector('.effect-level');
 
 var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
 
+var bigPictureElement = document.querySelector('.big-picture');
+var LoadCommentsBtnElement = bigPictureElement.querySelector('.comments-loader');
+var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
+
 var filters = {
   chrome: {
     name: 'grayscale',
@@ -66,12 +70,6 @@ var filters = {
     unit: ''
   },
 };
-
-var bigPictureElement = document.querySelector('.big-picture');
-var LoadCommentsBtnElement = bigPictureElement.querySelector('.comments-loader');
-var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
-
-bigPictureElement.classList.remove(HIDDEN_CLASS);
 
 var getCommentsCount = function () {
   return getRandomInRange(0, 5);
@@ -162,6 +160,7 @@ var init = function () {
   renderPhotosToDOM(photosArray);
   renderBigPicture(photosArray[0]);
   onEffectClick();
+  bigPictureElement.classList.remove(HIDDEN_CLASS);
 };
 
 var onPopupEscPress = function (evt) {
