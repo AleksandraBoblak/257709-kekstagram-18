@@ -1,6 +1,7 @@
 'use strict';
 
 var HIDDEN_CLASS = 'hidden';
+var VISUALLY_HIDDEN_CLASS = 'visually-hidden';
 var ESC_KEYCODE = 27;
 var COMMENTS = ['Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -32,6 +33,10 @@ var previewOriginalElement = uploadFormElement.querySelector('#effect-none');
 var sliderFormElement = uploadFormElement.querySelector('.effect-level');
 
 var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
+
+var bigPictureElement = document.querySelector('.big-picture');
+var loadCommentsBtnElement = bigPictureElement.querySelector('.comments-loader');
+var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
 
 var filters = {
   chrome: {
@@ -129,9 +134,31 @@ var renderPhotosToDOM = function (photos) {
   picturesElement.appendChild(fragment);
 };
 
+var renderBigPicture = function (photo) {
+  bigPictureElement.querySelector('.big-picture__img img').src = photo.url;
+  bigPictureElement.querySelector('.likes-count').textContent = photo.likes;
+  bigPictureElement.querySelector('.social__caption').alt = photo.description;
+  bigPictureElement.querySelector('.comments-count').textContent = photo.comments.length;
+
+  var commentElements = bigPictureElement.querySelectorAll('.social__comment');
+  for (var i = 0; i < commentElements.length; i++) {
+    if (photo.comments[i]) {
+      commentElements[i].querySelector('.social__picture').src = photo.comments[i].avatar;
+      commentElements[i].querySelector('.social__picture').alt = photo.comments[i].name;
+      commentElements[i].querySelector('.social__text').textContent = photo.comments[i].message;
+    }
+  }
+
+  loadCommentsBtnElement.classList.add(VISUALLY_HIDDEN_CLASS);
+  commentCountElement.classList.add(VISUALLY_HIDDEN_CLASS);
+};
+
 var init = function () {
-  renderPhotosToDOM(generatePhotosArray());
+  var photosArray = generatePhotosArray();
+  renderPhotosToDOM(photosArray);
+  renderBigPicture(photosArray[0]);
   onEffectClick();
+  bigPictureElement.classList.remove(HIDDEN_CLASS);
 };
 
 var onPopupEscPress = function (evt) {
