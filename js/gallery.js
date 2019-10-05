@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
 
   var VISUALLY_HIDDEN_CLASS = 'visually-hidden';
