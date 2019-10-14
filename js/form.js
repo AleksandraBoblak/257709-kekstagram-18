@@ -48,6 +48,19 @@
   var sliderFormElement = uploadFormElement.querySelector('.effect-level');
 
   var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
+  var commentInputElement = uploadFormElement.querySelector('.text__description');
+
+  var imgUploadFormElement = document.querySelector('.img-upload__form');
+
+  var successTemplate = document.querySelector('#success')
+  .content
+  .querySelector('.success');
+
+  var mainElement = document.querySelector('main');
+
+  var errorTemplate = document.querySelector('#error')
+  .content
+  .querySelector('.error');
 
   var onPopupEscPress = function (evt) {
     window.util.isEscEvent(evt, closePopup);
@@ -123,6 +136,10 @@
     return '';
   };
 
+  var markInvalid = function (element) {
+    element.style.outline = '2px red solid';
+  };
+
   onEffectClick();
 
   uploadInputElement.addEventListener('change', function () {
@@ -147,10 +164,45 @@
     hashtagsInputElement.setCustomValidity(validateHashtag(hashtags));
   });
 
+  hashtagsInputElement.addEventListener('invalid', function () {
+    markInvalid(hashtagsInputElement);
+  });
+
   hashtagsInputElement.addEventListener('keydown', function (evt) {
     window.util.isEscEvent(evt, function () {
       evt.stopPropagation();
     });
   });
 
+  commentInputElement.addEventListener('keydown', function (evt) {
+    window.util.isEscEvent(evt, function () {
+      evt.stopPropagation();
+    });
+  });
+
+  commentInputElement.addEventListener('invalid', function () {
+    markInvalid(commentInputElement);
+  });
+
+  var loadSuccess = function () {
+    window.util.hide(uploadFormElement);
+    var successElement = successTemplate.cloneNode(true);
+    mainElement.appendChild(successElement);
+
+    if (document.querySelector('.error')) {
+      document.querySelector('.error').remove();
+    }
+  };
+
+  var errorHandler = function (errorMessage) {
+    window.util.hide(uploadFormElement);
+    var errorElement = errorTemplate.cloneNode(true);
+    errorElement.querySelector('.error__title').textContent = errorMessage;
+    mainElement.appendChild(errorElement);
+  };
+
+  imgUploadFormElement.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(imgUploadFormElement), loadSuccess, errorHandler);
+    evt.preventDefault();
+  });
 })();
