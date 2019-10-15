@@ -48,6 +48,7 @@
   var sliderFormElement = uploadFormElement.querySelector('.effect-level');
 
   var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
+  var commentInputElement = uploadFormElement.querySelector('.text__description');
 
   var onPopupEscPress = function (evt) {
     window.util.isEscEvent(evt, closePopup);
@@ -123,6 +124,10 @@
     return '';
   };
 
+  var markInvalid = function (element) {
+    element.style.outline = '2px red solid';
+  };
+
   onEffectClick();
 
   uploadInputElement.addEventListener('change', function () {
@@ -147,10 +152,23 @@
     hashtagsInputElement.setCustomValidity(validateHashtag(hashtags));
   });
 
+  hashtagsInputElement.addEventListener('invalid', function () {
+    markInvalid(hashtagsInputElement);
+  });
+
   hashtagsInputElement.addEventListener('keydown', function (evt) {
     window.util.isEscEvent(evt, function () {
       evt.stopPropagation();
     });
   });
 
+  commentInputElement.addEventListener('keydown', function (evt) {
+    window.util.isEscEvent(evt, function () {
+      evt.stopPropagation();
+    });
+  });
+
+  commentInputElement.addEventListener('invalid', function () {
+    markInvalid(commentInputElement);
+  });
 })();

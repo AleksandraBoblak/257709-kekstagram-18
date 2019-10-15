@@ -10,6 +10,7 @@
   .querySelector('.picture');
 
   var bigPictureElement = document.querySelector('.big-picture');
+  var bigPicCancelElement = bigPictureElement.querySelector('.big-picture__cancel');
   var loadCommentsBtnElement = bigPictureElement.querySelector('.comments-loader');
   var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
 
@@ -18,6 +19,7 @@
   .querySelector('.error');
 
   var mainElement = document.querySelector('main');
+  var bodyElement = document.querySelector('body');
 
   var renderPhoto = function (photo) {
     var photoElement = pictureTemplate.cloneNode(true);
@@ -26,6 +28,10 @@
     photoElement.querySelector('.picture__likes').textContent = photo.likes;
     photoElement.querySelector('.picture__img').src = photo.url;
     photoElement.querySelector('.picture__img').alt = photo.description;
+
+    photoElement.addEventListener('click', function () {
+      renderBigPicture(photo);
+    });
 
     return photoElement;
   };
@@ -45,8 +51,13 @@
       }
     }
 
+    window.util.show(bigPictureElement);
+    document.addEventListener('keydown', onPopupEscPress);
+
     loadCommentsBtnElement.classList.add(VISUALLY_HIDDEN_CLASS);
     commentCountElement.classList.add(VISUALLY_HIDDEN_CLASS);
+
+    bodyElement.classList.add('modal-open');
   };
 
   var successHandler = function (photos) {
@@ -56,8 +67,6 @@
       fragment.appendChild(renderPhoto(photos[i]));
     }
     picturesElement.appendChild(fragment);
-
-    renderBigPicture(photos[0]);
 
     if (document.querySelector('.error')) {
       document.querySelector('.error').remove();
@@ -73,6 +82,20 @@
   var init = function () {
     window.backend.load(successHandler, errorHandler);
   };
+
+  var onPopupEscPress = function (evt) {
+    window.util.isEscEvent(evt, closePreview);
+  };
+
+  var closePreview = function () {
+    window.util.hide(bigPictureElement);
+    document.removeEventListener('keydown', onPopupEscPress);
+    bodyElement.classList.remove('modal-open');
+  };
+
+  bigPicCancelElement.addEventListener('click', function () {
+    closePreview();
+  });
 
   init();
 

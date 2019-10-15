@@ -30,7 +30,8 @@
     xhr.send();
   };
 
+
   window.backend = {
-    load: load,
+    load: load
   };
 })();
