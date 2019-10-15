@@ -33,10 +33,6 @@
       renderBigPicture(photo);
     });
 
-    photoElement.addEventListener('keydown', function (evt) {
-      window.util.isEnterEvent(evt, renderBigPicture(photo));
-    });
-
     return photoElement;
   };
 
