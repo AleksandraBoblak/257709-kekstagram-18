@@ -72,8 +72,6 @@
     }
     picturesElement.appendChild(fragment);
 
-    //  renderBigPicture(photos[0]);
-
     if (document.querySelector('.error')) {
       document.querySelector('.error').remove();
     }
