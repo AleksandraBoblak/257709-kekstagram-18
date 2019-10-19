@@ -130,7 +130,7 @@
     return '';
   };
 
-  var loadSuccess = function () {
+  var loadSuccessHandler = function () {
     closePopup();
     var successElement = successTemplate.cloneNode(true);
     mainElement.appendChild(successElement);
@@ -196,7 +196,7 @@
   });
 
   imgUploadFormElement.addEventListener('submit', function (evt) {
-    window.backend.save(new FormData(imgUploadFormElement), loadSuccess, errorHandler);
+    window.backend.save(new FormData(imgUploadFormElement), loadSuccessHandler, errorHandler);
     evt.preventDefault();
   });
 
