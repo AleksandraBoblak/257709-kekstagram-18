@@ -29,6 +29,6 @@
     isEscEvent: isEscEvent,
     isEnterEvent: isEnterEvent,
     hide: hide,
-    show: show,
+    show: show
   };
 })();

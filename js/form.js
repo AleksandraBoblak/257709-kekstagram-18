@@ -50,6 +50,16 @@
   var hashtagsInputElement = uploadFormElement.querySelector('.text__hashtags');
   var commentInputElement = uploadFormElement.querySelector('.text__description');
 
+  var imgUploadFormElement = document.querySelector('.img-upload__form');
+  var mainElement = document.querySelector('main');
+  var successTemplate = document.querySelector('#success')
+  .content
+  .querySelector('.success');
+
+  var errorTemplate = document.querySelector('#error')
+  .content
+  .querySelector('.error');
+
   var onPopupEscPress = function (evt) {
     window.util.isEscEvent(evt, closePopup);
   };
@@ -59,10 +69,6 @@
     document.removeEventListener('keydown', onPopupEscPress);
     uploadInputElement.value = uploadInputElement.defaultValue;
   };
-
-  buttonCloseElement.addEventListener('click', function () {
-    closePopup();
-  });
 
   var setValue = function (value) {
     pinElement.style.left = value + '%';
@@ -124,6 +130,76 @@
     return '';
   };
 
+  var loadSuccessHandler = function () {
+    closePopup();
+    var successElement = successTemplate.cloneNode(true);
+    mainElement.appendChild(successElement);
+
+    var successBtnElement = successElement.querySelector('.success__button');
+
+    var handleEscPress = function (evt) {
+      window.util.isEscEvent(evt, removeSuccessMessage);
+    };
+
+    var removeSuccessMessage = function () {
+      mainElement.removeChild(successElement);
+      successBtnElement.removeEventListener('click', removeSuccessMessage);
+      document.removeEventListener('keydown', handleEscPress);
+      document.removeEventListener('click', removeSuccessMessage);
+    };
+
+    successBtnElement.addEventListener('click', removeSuccessMessage);
+
+    document.addEventListener('keydown', handleEscPress);
+
+    document.addEventListener('click', removeSuccessMessage);
+
+    if (document.querySelector('.error')) {
+      document.querySelector('.error').remove();
+    }
+  };
+
+  var errorHandler = function (errorMessage) {
+    closePopup();
+
+    var errorElement = errorTemplate.cloneNode(true);
+    errorElement.querySelector('.error__title').textContent = errorMessage;
+    mainElement.appendChild(errorElement);
+
+    var errorBtnElement = errorElement.querySelectorAll('.error__button');
+
+    var handleEscPress = function (evt) {
+      window.util.isEscEvent(evt, removeErrorMessage);
+    };
+
+    var removeErrorMessage = function () {
+      mainElement.removeChild(errorElement);
+      document.removeEventListener('keydown', handleEscPress);
+      document.removeEventListener('click', removeErrorMessage);
+    };
+
+    var errorBtnHandler = function (button) {
+      button.addEventListener('click', removeErrorMessage);
+    };
+
+    document.addEventListener('keydown', handleEscPress);
+
+    document.addEventListener('click', removeErrorMessage);
+
+    for (var i = 0; i < errorBtnElement.length; i++) {
+      errorBtnHandler(errorBtnElement[i]);
+    }
+  };
+
+  buttonCloseElement.addEventListener('click', function () {
+    closePopup();
+  });
+
+  imgUploadFormElement.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(imgUploadFormElement), loadSuccessHandler, errorHandler);
+    evt.preventDefault();
+  });
+
   var markInvalid = function (element) {
     element.style.outline = '2px red solid';
   };
@@ -132,6 +208,7 @@
 
   uploadInputElement.addEventListener('change', function () {
     window.util.show(uploadFormElement);
+
     document.addEventListener('keydown', onPopupEscPress);
     setValue(100);
   });
