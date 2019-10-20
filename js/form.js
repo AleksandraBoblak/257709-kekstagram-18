@@ -40,6 +40,7 @@
   var buttonCloseElement = uploadFormElement.querySelector('.img-upload__cancel');
   var pinElement = uploadFormElement.querySelector('.effect-level__pin');
   var effectLineElement = uploadFormElement.querySelector('.effect-level__line');
+  var effectDepthElement = uploadFormElement.querySelector('.effect-level__depth');
 
   var effectValueElement = uploadFormElement.querySelector('.effect-level__value');
   var effectsElements = uploadFormElement.querySelectorAll('.effects__radio');
@@ -64,8 +65,10 @@
     closePopup();
   });
 
-  var setValue = function (value) {
+  var setValue = function (rawValue) {
+    var value = Math.max(0, Math.min(100, rawValue));
     pinElement.style.left = value + '%';
+    effectDepthElement.style.width = value + '%';
     effectValueElement.setAttribute('value', value);
 
     var effectName = uploadFormElement.querySelector('.effects__list input:checked').value;
@@ -136,12 +139,6 @@
     setValue(100);
   });
 
-  effectLineElement.addEventListener('mouseup', function (event) {
-    var bounds = effectLineElement.getBoundingClientRect();
-    var value = (event.clientX - bounds.left) / bounds.width * 100;
-    setValue(value);
-  });
-
   previewOriginalElement.addEventListener('click', function () {
     imagePreview.style.filter = 'none';
     window.util.hide(sliderFormElement);
@@ -171,43 +168,30 @@
   commentInputElement.addEventListener('invalid', function () {
     markInvalid(commentInputElement);
   });
+
+  // Перемещение пина
+
+  pinElement.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var onMouseMove = function (event) {
+      var bounds = effectLineElement.getBoundingClientRect();
+      var value = (event.clientX - bounds.left) / bounds.width * 100;
+      setValue(value);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      var bounds = effectLineElement.getBoundingClientRect();
+      var value = (event.clientX - bounds.left) / bounds.width * 100;
+      setValue(value);
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
 })();
-
-// Перемещение пина
-
-pinElement.addEventListener('mousedown', function (evt) {
-  evt.preventDefault();
-
-  var startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
-
-  var onMouseMove = function (moveEvt) {
-    moveEvt.preventDefault();
-
-    var shift = {
-      x: startCoords.x - moveEvt.clientX,
-      //y: startCoords.y - moveEvt.clientY
-    };
-
-    startCoords = {
-      x: moveEvt.clientX,
-      //y: moveEvt.clientY
-    };
-
-    //pinElement.style.top = (setupDialogElement.offsetTop - shift.y) + 'px';
-    pinElement.style.left = (setupDialogElement.offsetLeft - shift.x) + 'px';
-
-  };
-
-  var onMouseUp = function (upEvt) {
-    upEvt.preventDefault();
-
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
-
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
-});
