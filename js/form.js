@@ -40,6 +40,7 @@
   var buttonCloseElement = uploadFormElement.querySelector('.img-upload__cancel');
   var pinElement = uploadFormElement.querySelector('.effect-level__pin');
   var effectLineElement = uploadFormElement.querySelector('.effect-level__line');
+  var effectDepthElement = uploadFormElement.querySelector('.effect-level__depth');
 
   var effectValueElement = uploadFormElement.querySelector('.effect-level__value');
   var effectsElements = uploadFormElement.querySelectorAll('.effects__radio');
@@ -70,8 +71,14 @@
     uploadInputElement.value = uploadInputElement.defaultValue;
   };
 
-  var setValue = function (value) {
+  buttonCloseElement.addEventListener('click', function () {
+    closePopup();
+  });
+
+  var setValue = function (rawValue) {
+    var value = Math.max(0, Math.min(100, rawValue));
     pinElement.style.left = value + '%';
+    effectDepthElement.style.width = value + '%';
     effectValueElement.setAttribute('value', value);
 
     var effectName = uploadFormElement.querySelector('.effects__list input:checked').value;
@@ -213,12 +220,6 @@
     setValue(100);
   });
 
-  effectLineElement.addEventListener('mouseup', function (event) {
-    var bounds = effectLineElement.getBoundingClientRect();
-    var value = (event.clientX - bounds.left) / bounds.width * 100;
-    setValue(value);
-  });
-
   previewOriginalElement.addEventListener('click', function () {
     imagePreview.style.filter = 'none';
     window.util.hide(sliderFormElement);
@@ -247,5 +248,31 @@
 
   commentInputElement.addEventListener('invalid', function () {
     markInvalid(commentInputElement);
+  });
+
+  // Перемещение пина
+
+  pinElement.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var onMouseMove = function (event) {
+      var bounds = effectLineElement.getBoundingClientRect();
+      var value = (event.clientX - bounds.left) / bounds.width * 100;
+      setValue(value);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      var bounds = effectLineElement.getBoundingClientRect();
+      var value = (event.clientX - bounds.left) / bounds.width * 100;
+      setValue(value);
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 })();
