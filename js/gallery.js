@@ -2,7 +2,6 @@
 
 (function () {
 
-  var VISUALLY_HIDDEN_CLASS = 'visually-hidden';
   var HIDDEN_CLASS = 'hidden';
   var PHOTO_COUNT = 10;
 
@@ -56,6 +55,7 @@
   loadCommentsBtnElement.classList.add(HIDDEN_CLASS);
 
   var renderBigPicture = function (photo) {
+    removeListItem();
     var commentsArray = photo.comments;
     var arraySliceCount = Math.ceil(commentsArray.length / 5);
     var i = 0;
@@ -65,8 +65,8 @@
     }
 
     var renderNewComments = function (array) {
-      removeListItem();
       var arraySlice = array.slice(i * 5, (i + 1) * 5);
+      commentCountElement.firstChild.textContent = i * 5 + arraySlice.length + ' из ';
       i++;
       for (var j = 0; j < arraySlice.length; j++) {
         renderListItem(arraySlice[j]);
@@ -84,16 +84,30 @@
     bigPictureElement.querySelector('.social__caption').alt = photo.description;
     bigPictureElement.querySelector('.comments-count').textContent = commentsArray.length;
 
-    loadCommentsBtnElement.addEventListener('click', function () {
+    var onLoadBtnClick = function () {
       renderNewComments(commentsArray);
-    });
+    };
+
+    var onPopupEscPress = function (evt) {
+      window.util.isEscEvent(evt, closePreview);
+    };
+
+    loadCommentsBtnElement.addEventListener('click', onLoadBtnClick);
 
     window.util.show(bigPictureElement);
     document.addEventListener('keydown', onPopupEscPress);
 
-    commentCountElement.classList.add(VISUALLY_HIDDEN_CLASS);
-
     bodyElement.classList.add('modal-open');
+
+    var closePreview = function () {
+      window.util.hide(bigPictureElement);
+      document.removeEventListener('keydown', onPopupEscPress);
+      bigPicCancelElement.removeEventListener('click', closePreview);
+      loadCommentsBtnElement.removeEventListener('click', onLoadBtnClick);
+      bodyElement.classList.remove('modal-open');
+    };
+
+    bigPicCancelElement.addEventListener('click', closePreview);
   };
 
   var renderPhoto = function (photo) {
@@ -205,20 +219,6 @@
   var init = function () {
     window.backend.load(successHandler, errorHandler);
   };
-
-  var onPopupEscPress = function (evt) {
-    window.util.isEscEvent(evt, closePreview);
-  };
-
-  var closePreview = function () {
-    window.util.hide(bigPictureElement);
-    document.removeEventListener('keydown', onPopupEscPress);
-    bodyElement.classList.remove('modal-open');
-  };
-
-  bigPicCancelElement.addEventListener('click', function () {
-    closePreview();
-  });
 
   init();
 })();
