@@ -71,10 +71,6 @@
     uploadInputElement.value = uploadInputElement.defaultValue;
   };
 
-  buttonCloseElement.addEventListener('click', function () {
-    closePopup();
-  });
-
   var setValue = function (rawValue) {
     var value = Math.max(0, Math.min(100, rawValue));
     pinElement.style.left = value + '%';
@@ -125,7 +121,9 @@
       return 'Слишком много хэштегов!';
     }
 
-    if (hasRepeats(hashtagStrings)) {
+    if (hasRepeats(hashtagStrings.map(function (tag) {
+      return tag.toLowerCase();
+    }))) {
       return 'Хэштеги повторяются';
     }
 
@@ -249,8 +247,6 @@
   commentInputElement.addEventListener('invalid', function () {
     markInvalid(commentInputElement);
   });
-
-  // Перемещение пина
 
   pinElement.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
