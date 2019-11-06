@@ -4,6 +4,7 @@
 
   var HIDDEN_CLASS = 'hidden';
   var PHOTO_COUNT = 10;
+  var SLICE_SIZE = 5;
 
   var picturesElement = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture')
@@ -57,7 +58,7 @@
   var renderBigPicture = function (photo) {
     removeListItem();
     var commentsArray = photo.comments;
-    var arraySliceCount = Math.ceil(commentsArray.length / 5);
+    var arraySliceCount = Math.ceil(commentsArray.length / SLICE_SIZE);
     var i = 0;
 
     if (arraySliceCount > 1) {
@@ -65,8 +66,8 @@
     }
 
     var renderNewComments = function (array) {
-      var arraySlice = array.slice(i * 5, (i + 1) * 5);
-      commentCountElement.firstChild.textContent = i * 5 + arraySlice.length + ' из ';
+      var arraySlice = array.slice(i * SLICE_SIZE, (i + 1) * SLICE_SIZE);
+      commentCountElement.firstChild.textContent = i * SLICE_SIZE + arraySlice.length + ' из ';
       i++;
       for (var j = 0; j < arraySlice.length; j++) {
         renderListItem(arraySlice[j]);
