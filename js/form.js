@@ -2,6 +2,7 @@
 
 (function () {
   var HASHTAG_COUNT = 5;
+  var SYMBOLS_COUNT = 140;
   var filters = {
     chrome: {
       name: 'grayscale',
@@ -68,7 +69,7 @@
   var closePopup = function () {
     window.util.hide(uploadFormElement);
     document.removeEventListener('keydown', onPopupEscPress);
-    uploadInputElement.value = uploadInputElement.defaultValue;
+    imgUploadFormElement.reset();
   };
 
   var setValue = function (rawValue) {
@@ -131,6 +132,13 @@
       if (!hashtagStrings[i].match(/^#[a-z]{1,19}$/i) && hashtagStrings[i] !== '') {
         return 'Неправильный формат хэштега';
       }
+    }
+    return '';
+  };
+
+  var validateDescription = function (text) {
+    if (text.length > SYMBOLS_COUNT) {
+      return 'Слишком много текста';
     }
     return '';
   };
@@ -244,29 +252,33 @@
     });
   });
 
+  commentInputElement.addEventListener('change', function () {
+    commentInputElement.setCustomValidity(validateDescription(commentInputElement.value));
+  });
+
   commentInputElement.addEventListener('invalid', function () {
     markInvalid(commentInputElement);
   });
 
-  pinElement.addEventListener('mousedown', function (evt) {
+  var onMouseMove = function (evt) {
+    var bounds = effectLineElement.getBoundingClientRect();
+    var value = (evt.clientX - bounds.left) / bounds.width * 100;
+    setValue(value);
+  };
+
+  var onMouseUp = function (evt) {
     evt.preventDefault();
 
-    var onMouseMove = function (event) {
-      var bounds = effectLineElement.getBoundingClientRect();
-      var value = (event.clientX - bounds.left) / bounds.width * 100;
-      setValue(value);
-    };
+    var bounds = effectLineElement.getBoundingClientRect();
+    var value = (evt.clientX - bounds.left) / bounds.width * 100;
+    setValue(value);
 
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
 
-      var bounds = effectLineElement.getBoundingClientRect();
-      var value = (event.clientX - bounds.left) / bounds.width * 100;
-      setValue(value);
-
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
+  pinElement.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
